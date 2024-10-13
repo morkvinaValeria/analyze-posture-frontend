@@ -1,20 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import shrimpImage from '../../../assets/img/shrimp.png';
+import styles from './styles.module.scss';
+import Link from '../link';
+import { AppRoute } from '../../../common/enums';
 
 function Menu() {
   return (
-    <div>
-      <Navbar bg="light" expand="lg">
-        <Container>
-          <Navbar.Brand href="/">Posture Analyzer</Navbar.Brand>
-          {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="/info">Additional Information</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+    <div className={styles.menu}>
+      <img src={shrimpImage} width="40" height="40" alt="" />
+      <Link to={AppRoute.ROOT}>
+        <h1>Posture Analyzer</h1>
+      </Link>
     </div>
   );
 }

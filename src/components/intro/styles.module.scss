@@ -1,0 +1,61 @@
+.mainContainer {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+.introBody {
+  width: 80vw;
+  max-width: 1200px;
+  margin: 3em 0;
+
+  h4 {
+    font-family: 'Permanent Marker', cursive;
+    font-weight: 400;
+    font-size: x-large;
+    font-style: normal;
+    color: #f78666;
+  }
+  p {
+    font-family: 'Raleway', sans-serif;
+    font-optical-sizing: auto;
+    font-size: large;
+    font-weight: 500;
+    font-style: normal;
+    color: #55352b;
+  }
+
+  .caution {
+    font-weight: 1000;
+    font-size: larger;
+  }
+
+  .shrimpContainer {
+    display: flex;
+    flex-direction: row;
+
+    .containerDescription {
+      margin-left: 2em;
+    }
+  }
+
+  .TryItOutButtonDescription {
+    display: flex;
+    justify-content: center;
+
+    .TryItOutButton {
+      font-size: 1.52rem;
+      padding: 0.56rem 1.6rem;
+      border-radius: 0.8rem;
+      background-color: #f78666;
+      border-color: #f78666;
+      color: white;
+      outline: none;
+      margin-top: 2em;
+    }
+    .TryItOutButton:hover {
+      background-color: #5a4640;
+      border-color: #5a4640;
+      color: white;
+    }
+  }
+}
