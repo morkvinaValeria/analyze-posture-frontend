@@ -38,11 +38,11 @@
     }
   }
 
-  .TryItOutButtonDescription {
+  .tryItOutButtonDescription {
     display: flex;
     justify-content: center;
 
-    .TryItOutButton {
+    .tryItOutButton {
       font-size: 1.52rem;
       padding: 0.56rem 1.6rem;
       border-radius: 0.8rem;
@@ -52,7 +52,7 @@
       outline: none;
       margin-top: 2em;
     }
-    .TryItOutButton:hover {
+    .tryItOutButton:hover {
       background-color: #5a4640;
       border-color: #5a4640;
       color: white;

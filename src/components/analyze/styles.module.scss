@@ -1,0 +1,36 @@
+.mainContainer {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+
+  h4 {
+    font-family: 'Raleway', sans-serif;
+    font-optical-sizing: auto;
+    font-size: large;
+    font-weight: 1000;
+    font-size: x-large;
+    color: #55352b;
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+}
+.stepperButtonsContainer {
+  display: flex;
+  justify-content: space-between;
+
+  .stepperButton {
+    font-size: 1.52rem;
+    padding: 0.26rem 1.3rem;
+    border-radius: 0.8rem;
+    background-color: #f78666;
+    border-color: #f78666;
+    color: white;
+    outline: none;
+    margin-top: 0.5em;
+  }
+  .stepperButton:hover {
+    background-color: #5a4640;
+    border-color: #5a4640;
+    color: white;
+  }
+}

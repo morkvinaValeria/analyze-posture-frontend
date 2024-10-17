@@ -9,18 +9,6 @@ import styles from './styles.module.scss';
 const Intro: React.FC = () => {
   return (
     <>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
       <div className={styles.mainContainer}>
         <Menu />
         <div className={styles.introBody}>
@@ -54,9 +42,9 @@ const Intro: React.FC = () => {
               </p>
             </div>
           </div>
-          <div className={styles.TryItOutButtonDescription}>
+          <div className={styles.tryItOutButtonDescription}>
             <Link to={AppRoute.ANALYZE}>
-              <Button className={styles.TryItOutButton} variant="success">
+              <Button className={styles.tryItOutButton} variant="success">
                 Try it out
               </Button>
             </Link>

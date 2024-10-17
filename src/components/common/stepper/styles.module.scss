@@ -1,0 +1,25 @@
+.stepperContainer {
+  display: flex;
+  justify-items: center;
+  align-items: center;
+
+  .step,
+  .stepActive {
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    background-color: #f2e2de;
+    justify-content: center;
+  }
+  .stepActive,
+  .finalStepActive {
+    background-color: #f78666;
+  }
+
+  .finalStep,
+  .finalStepActive {
+    width: 6em;
+    height: 0.5em;
+    background-color: #f2e2de;
+  }
+}
