@@ -14,32 +14,24 @@ const getBase64 = (file: FileType): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-const getBase64List = async (fileList: UploadFile[]): Promise<string[]> => {
-  const base64List = [];
-  console.log('HERE');
-  for (let i = 0; i < fileList.length; i++) {
-    const file = fileList[i];
-    if (!file.preview) {
-      file.preview = await getBase64(file.originFileObj as FileType);
-    }
-    base64List.push(file.preview);
-  }
-
-  return base64List;
-};
-
 const UploadImages: React.FC = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const stepContext = useContext(StepContext);
+  const savedFileList = stepContext?.fileList?.map((file) => ({
+    ...file,
+    status: 'done',
+  }));
+  const [fileList, setFileList] = useState<UploadFile[]>(
+    (savedFileList as UploadFile[]) || []
+  );
 
   const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
+    if (!file.preview) {
       file.preview = await getBase64(file.originFileObj as FileType);
     }
 
-    setPreviewImage(file.url || (file.preview as string));
+    setPreviewImage(file.preview as string);
     setPreviewOpen(true);
   };
 
@@ -47,16 +39,26 @@ const UploadImages: React.FC = () => {
     fileList: newFileList,
   }) => {
     setFileList(newFileList);
-    console.log('handleChange-fileList', fileList);
 
     const filteredFileList = fileList.filter(
       (file) => file.status !== 'removed'
     );
-    console.log('handleChange-filteredFileList', filteredFileList);
-    const listBase64 = await getBase64List(filteredFileList);
-    console.log('handleChange-listBase64', listBase64);
-    stepContext?.setFileList(listBase64);
-    console.log('handleChange-stepContext', stepContext?.fileList);
+    const listWithBase64 = [];
+    for (let i = 0; i < filteredFileList.length; i++) {
+      const file = filteredFileList[i];
+      if (!file.preview) {
+        file.preview = await getBase64(file.originFileObj as FileType);
+      }
+
+      listWithBase64.push({ ...file, base64: file.preview });
+    }
+
+    stepContext?.setFileList(listWithBase64);
+
+    console.log(listWithBase64.length);
+    if (listWithBase64.length >= 1) {
+      stepContext?.setIsNextValid(true);
+    }
   };
 
   const uploadButton = (
@@ -71,6 +73,7 @@ const UploadImages: React.FC = () => {
       <h5>Load your photo.</h5>
       <br />
       <Upload
+        multiple={true}
         action="http://127.0.0.1:8000/upload"
         method="POST"
         listType="picture-card"
