@@ -1,0 +1,10 @@
+enum FullLandmarks {
+  RIGHT_SHOULDER = 'RIGHT_SHOULDER',
+  LEFT_SHOULDER = 'LEFT_SHOULDER',
+  RIGHT_HIP = 'RIGHT_HIP',
+  LEFT_HIP = 'LEFT_HIP',
+  RIGHT_KNEE = 'RIGHT_KNEE',
+  LEFT_KNEE = 'LEFT_KNEE',
+}
+
+export { FullLandmarks };

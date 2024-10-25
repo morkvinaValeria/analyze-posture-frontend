@@ -10,7 +10,6 @@ import './App.css';
 import NotFound from './components/not-found';
 import Intro from './components/intro';
 import AnalyzePosture from './components/analyze';
-import Draggable from 'react-draggable';
 
 const App: React.FC = () => {
   const router = createBrowserRouter(

@@ -4,7 +4,7 @@ import type { UploadFile } from 'antd';
 interface Base64 {
   base64: string;
 }
-type UploadFileWithBase64 = UploadFile & Base64;
+export type UploadFileWithBase64 = UploadFile & Base64;
 
 export interface StepContextType {
   fileList: UploadFileWithBase64[];

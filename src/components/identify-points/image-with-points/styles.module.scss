@@ -1,0 +1,18 @@
+.parentContainer {
+  position: relative;
+  text-align: center;
+  color: white;
+
+  img {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  background-color: #f78666;
+  border-radius: 50%;
+  display: inline-block;
+}
