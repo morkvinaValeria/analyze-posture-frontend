@@ -1,0 +1,21 @@
+.imgSlider {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  .next,
+  .prev {
+    padding: 10px;
+    color: black;
+    height: 10em;
+    font-size: xx-large;
+    border: none;
+    background-color: transparent;
+  }
+  .next:active,
+  .prev:active {
+    outline: 0 !important;
+    box-shadow: none;
+  }
+}

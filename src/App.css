@@ -4,6 +4,7 @@
 }
 body {
   background-color: #f3f1f5 !important;
+  overflow-x: none !important;
 }
 
 /* 

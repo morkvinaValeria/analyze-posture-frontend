@@ -3,9 +3,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppRoute } from '../../common/enums';
 import { DetectedPoints } from '../../common/types';
-import { StepContext } from '../../contexts/step';
+import { StepContext, UploadFileWithBase64 } from '../../contexts/step';
 import { DetectPointsService } from '../../services/detect-points.service';
 import ImageWithPoints from './image-with-points';
+
+import styles from './styles.module.scss';
 
 const IdentifyPoints: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +17,12 @@ const IdentifyPoints: React.FC = () => {
 
   const [points, setPoints] = useState<Record<string, DetectedPoints>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentFile, setCurrentFile] = useState<
+    UploadFileWithBase64 & { index: number }
+  >({
+    ...(stepContext?.fileList[0] as UploadFileWithBase64),
+    index: 0,
+  });
 
   const getPoints = async (): Promise<Record<string, DetectedPoints>> => {
     setIsLoading(true);
@@ -32,6 +40,13 @@ const IdentifyPoints: React.FC = () => {
     return points;
   };
 
+  const changeFile = (n: number) => {
+    if (stepContext?.fileList && currentFile) {
+      const newFile = stepContext?.fileList[currentFile.index + n];
+      setCurrentFile({ ...newFile, index: currentFile.index + n });
+    }
+  };
+
   useEffect(() => {
     getPoints()
       .then((result) => result && setPoints(result))
@@ -40,26 +55,46 @@ const IdentifyPoints: React.FC = () => {
 
   useEffect(() => {
     if (Object.keys(points).length !== 0) {
+      console.log('useEffect-currentFile', currentFile);
       setIsLoading(false);
     }
-  }, [points]);
+  }, [points, currentFile]);
+
+  useEffect(() => {
+    if (!points[currentFile.uid]) {
+      setIsLoading(true);
+    }
+  }, [currentFile]);
 
   return (
     <>
       <h5>Change positions of dots if needed</h5>
       <br />
-      {isLoading === false ? (
-        stepContext?.fileList.map((file, i) => (
-          //{x: 0.485744833946228, y: 0.18744662404060364}
+      {isLoading === false && currentFile && points[currentFile.uid] ? (
+        <div className={styles.imgSlider}>
+          {currentFile?.index !== 0 ? (
+            <button className={styles.prev} onClick={() => changeFile(-1)}>
+              &#10094;
+            </button>
+          ) : (
+            <></>
+          )}
           <ImageWithPoints
-            file={file}
-            points={points[file.uid]}
+            file={currentFile}
+            points={points[currentFile.uid]}
             adjustPoints={(newPoints: DetectedPoints) =>
-              setPoints({ ...points, [file.uid]: newPoints })
+              setPoints({ ...points, [currentFile.uid]: newPoints })
             }
-            key={i}
+            key={currentFile?.index || -1}
           />
-        ))
+          {currentFile?.index < (stepContext?.fileList || []).length - 1 ? (
+            <button className={styles.next} onClick={() => changeFile(1)}>
+              &#10095;
+            </button>
+          ) : (
+            <></>
+          )}
+        </div>
       ) : (
         <></>
       )}

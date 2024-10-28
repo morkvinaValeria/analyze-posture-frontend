@@ -21,7 +21,9 @@ const ImageWithPoints: React.FC<Props> = ({
   points,
   adjustPoints,
 }: Props) => {
+  const POINT_RADIUS = 5;
   const imageRef = useRef<HTMLImageElement>(null);
+
   const [relativePoints, setRelativePoints] = useState<
     Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>
   >({} as Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>);
@@ -46,12 +48,13 @@ const ImageWithPoints: React.FC<Props> = ({
   const calculateInitialPoints = (points: DetectedPoints) => {
     const rect = imageRef.current?.getBoundingClientRect() as DOMRect;
     console.log('rect', rect);
+    console.log('initial points', points);
     const calculatedPoints: Record<string, Omit<Point, 'z'>> = {};
     Object.entries(points?.landmarks).forEach(
       ([key, value]: [string, Point]) => {
         calculatedPoints[key] = {
-          x: value.x * rect.width - rect.left,
-          y: value.y * rect.height - rect.bottom,
+          x: Math.floor(value.x * rect.width) - POINT_RADIUS,
+          y: Math.floor(value.y * rect.height) - POINT_RADIUS,
         };
       }
     );
@@ -64,23 +67,24 @@ const ImageWithPoints: React.FC<Props> = ({
       const initPoints = calculateInitialPoints(points);
       setRelativePoints(initPoints);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageRef.current]);
 
   return (
-    <>
-      <div className={styles.parentContainer}>
-        <img src={file.preview} alt="posture points" ref={imageRef}></img>
-        {Object.entries(relativePoints).map(([key, point], i) => (
-          <Draggable
-            bounds="parent"
-            onDrag={handleDrag}
-            defaultPosition={point}
-          >
-            <div className={styles.dot}></div>
-          </Draggable>
-        ))}
-      </div>
-    </>
+    <div className={styles.parentContainer}>
+      <img
+        src={file.preview}
+        ref={imageRef}
+        className={styles.img}
+        alt="defined posture points"
+      />
+
+      {Object.entries(relativePoints).map(([key, point], i) => (
+        <Draggable bounds="parent" onDrag={handleDrag} positionOffset={point}>
+          <div className={styles.dot}></div>
+        </Draggable>
+      ))}
+    </div>
   );
 };
 
