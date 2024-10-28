@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import shrimpImage from '../../assets/img/shrimp.png';
 import { AppRoute } from '../../common/enums';
 import { DetectedPoints } from '../../common/types';
 import { StepContext, UploadFileWithBase64 } from '../../contexts/step';
@@ -96,7 +97,9 @@ const IdentifyPoints: React.FC = () => {
           )}
         </div>
       ) : (
-        <></>
+        <div className={styles.spinnerContainer}>
+          <img src={shrimpImage} className={styles.spinner} alt="spinner" />
+        </div>
       )}
     </>
   );

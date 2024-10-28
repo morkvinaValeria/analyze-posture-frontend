@@ -1,8 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import shrimpImage from '../../../assets/img/shrimp.png';
-import styles from './styles.module.scss';
-import Link from '../link';
 import { AppRoute } from '../../../common/enums';
+import Link from '../link';
+
+import styles from './styles.module.scss';
 
 function Menu() {
   return (
