@@ -3,7 +3,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import shrimpImage from '../../assets/img/shrimp.png';
 import { AppRoute } from '../../common/enums';
-import { DetectedPoints } from '../../common/types';
+import { ISideDetectedPoints } from '../../common/interfaces';
+import { DetectedPoints, Point } from '../../common/types';
 import { StepContext, UploadFileWithBase64 } from '../../contexts/step';
 import { DetectPointsService } from '../../services/detect-points.service';
 import ImageWithPoints from './image-with-points';
@@ -48,6 +49,22 @@ const IdentifyPoints: React.FC = () => {
     }
   };
 
+  const saveNewPosition = (newPoint: Record<string, Omit<Point, 'z'>>) => {
+    const changedPoints = {
+      ...points,
+      [currentFile.uid]: {
+        landmarks: {
+          ...points[currentFile.uid].landmarks,
+          ...newPoint,
+        },
+        sideView: points[currentFile.uid].sideView,
+        side:
+          (points[currentFile.uid] as ISideDetectedPoints).side || undefined,
+      } as DetectedPoints,
+    };
+    setPoints(changedPoints);
+  };
+
   useEffect(() => {
     getPoints()
       .then((result) => result && setPoints(result))
@@ -83,9 +100,7 @@ const IdentifyPoints: React.FC = () => {
           <ImageWithPoints
             file={currentFile}
             points={points[currentFile.uid]}
-            adjustPoints={(newPoints: DetectedPoints) =>
-              setPoints({ ...points, [currentFile.uid]: newPoints })
-            }
+            adjustPoints={saveNewPosition}
             key={currentFile?.index || -1}
           />
           {currentFile?.index < (stepContext?.fileList || []).length - 1 ? (

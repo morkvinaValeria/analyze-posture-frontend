@@ -1,9 +1,9 @@
 enum SideLandmarks {
-  EAR = 'EAR',
-  SHOULDER = 'SHOULDER',
-  HIP = 'HIP',
-  KNEE = 'KNEE',
-  ANKLE = 'ANKLE',
+  ear = 'ear',
+  shoulder = 'shoulder',
+  hip = 'hip',
+  knee = 'knee',
+  ankle = 'ankle',
 }
 
 export { SideLandmarks };
