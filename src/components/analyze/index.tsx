@@ -11,7 +11,7 @@ import styles from './styles.module.scss';
 const AnalyzePosture: React.FC = () => {
   const [currentStep, setCurrentStep] = React.useState(0);
 
-  const NUMBER_OF_STEPS = 5;
+  const NUMBER_OF_STEPS = 3;
 
   const goToNextStep = (): void =>
     setCurrentStep((prev) => (prev === NUMBER_OF_STEPS - 1 ? prev : prev + 1));

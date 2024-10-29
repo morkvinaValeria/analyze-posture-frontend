@@ -12,6 +12,7 @@ import ImageWithPoints from './image-with-points';
 import styles from './styles.module.scss';
 
 const IdentifyPoints: React.FC = () => {
+  const DISABLED_COLOR = 'grey';
   const navigate = useNavigate();
 
   const stepContext = useContext(StepContext);
@@ -26,10 +27,13 @@ const IdentifyPoints: React.FC = () => {
     index: 0,
   });
 
+  const isPrevDisabled = () => currentFile?.index === 0;
+  const isNextDisabled = () =>
+    currentFile?.index >= (stepContext?.fileList || []).length - 1;
+
   const getPoints = async (): Promise<Record<string, DetectedPoints>> => {
     setIsLoading(true);
     const fileList = stepContext?.fileList || [];
-    console.log(fileList);
     let points: Record<string, DetectedPoints> = {};
 
     for (let i = 0; i < fileList.length; i++) {
@@ -38,7 +42,6 @@ const IdentifyPoints: React.FC = () => {
       const resp = await detectPointsService.getPosturePoints(base64);
       points[uid] = resp;
     }
-    console.log(points);
     return points;
   };
 
@@ -73,7 +76,6 @@ const IdentifyPoints: React.FC = () => {
 
   useEffect(() => {
     if (Object.keys(points).length !== 0) {
-      console.log('useEffect-currentFile', currentFile);
       setIsLoading(false);
     }
   }, [points, currentFile]);
@@ -90,26 +92,28 @@ const IdentifyPoints: React.FC = () => {
       <br />
       {isLoading === false && currentFile && points[currentFile.uid] ? (
         <div className={styles.imgSlider}>
-          {currentFile?.index !== 0 ? (
-            <button className={styles.prev} onClick={() => changeFile(-1)}>
-              &#10094;
-            </button>
-          ) : (
-            <></>
-          )}
+          <button
+            className={styles.prev}
+            onClick={() => changeFile(-1)}
+            disabled={isPrevDisabled()}
+            style={isPrevDisabled() ? { color: DISABLED_COLOR } : {}}
+          >
+            &#10094;
+          </button>
           <ImageWithPoints
             file={currentFile}
             points={points[currentFile.uid]}
             adjustPoints={saveNewPosition}
             key={currentFile?.index || -1}
           />
-          {currentFile?.index < (stepContext?.fileList || []).length - 1 ? (
-            <button className={styles.next} onClick={() => changeFile(1)}>
-              &#10095;
-            </button>
-          ) : (
-            <></>
-          )}
+          <button
+            className={styles.next}
+            onClick={() => changeFile(1)}
+            disabled={isNextDisabled()}
+            style={isNextDisabled() ? { color: DISABLED_COLOR } : {}}
+          >
+            &#10095;
+          </button>
         </div>
       ) : (
         <div className={styles.spinnerContainer}>
