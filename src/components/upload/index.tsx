@@ -4,6 +4,8 @@ import { Image, Upload } from 'antd';
 import React, { useContext, useState } from 'react';
 import { StepContext } from '../../contexts/step';
 
+import styles from './styles.module.scss';
+
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 const getBase64 = (file: FileType): Promise<string> =>
@@ -70,7 +72,12 @@ const UploadImages: React.FC = () => {
 
   return (
     <>
-      <h5>Load your photo.</h5>
+      <h5>Upload Your Photos</h5>
+      <p>
+        To receive an accurate assessment of your posture, please provide clear
+        and properly aligned photos. Follow the instructions below to ensure the
+        best results.
+      </p>
       <br />
       <Upload
         multiple={true}
@@ -94,6 +101,34 @@ const UploadImages: React.FC = () => {
           src={previewImage}
         />
       )}
+      <p className={styles.note}>
+        <b>Note:</b> The processing time for analysis may take a few minutes,
+        depending on the quality and number of images submitted.
+      </p>
+      <br />
+      <h5>Photo Requirements</h5>
+      <p>
+        <b>Number of Photos:</b>
+        <br />
+        You can upload one or more photos (maximum is 3). The system requires at
+        least one image of your body in one of the following positions: front
+        view, side view or back view.
+      </p>
+      <p>
+        <b>Pose Guidelines:</b>
+        <br />
+        The person in the photo should be standing in a relaxed, natural posture
+        that closely resembles their everyday stance. Make sure not to correct
+        your posture while taking the photo to get an accurate analysis of your
+        typical body alignment.
+      </p>
+      <p>
+        <b>Clothing:</b>
+        <br />
+        Wear form-fitting clothing to ensure the visibility of body structure
+        (avoid baggy or loose clothing). Ensure that the arms, legs, and torso
+        are visible for better assessment.
+      </p>
     </>
   );
 };
