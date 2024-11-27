@@ -1,0 +1,46 @@
+.imgSlider {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  .next,
+  .prev {
+    padding: 10px;
+    color: #55352b;
+    height: 10em;
+    font-size: xx-large;
+    border: none;
+    background-color: transparent;
+  }
+  .next:active,
+  .prev:active {
+    outline: 0 !important;
+    box-shadow: none;
+  }
+}
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .spinner {
+    width: 4em;
+    height: 4em;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .spinner {
+    animation: spinner-spin infinite 5s linear;
+  }
+}
+
+@keyframes spinner-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

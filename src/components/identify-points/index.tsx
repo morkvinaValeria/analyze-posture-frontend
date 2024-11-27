@@ -18,7 +18,9 @@ const IdentifyPoints: React.FC = () => {
   const stepContext = useContext(StepContext);
   const detectPointsService = new DetectPointsService();
 
-  const [points, setPoints] = useState<Record<string, DetectedPoints>>({});
+  const [points, setPoints] = useState<Record<string, DetectedPoints>>({
+    ...stepContext?.pointList,
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentFile, setCurrentFile] = useState<
     UploadFileWithBase64 & { index: number }
@@ -66,12 +68,20 @@ const IdentifyPoints: React.FC = () => {
       } as DetectedPoints,
     };
     setPoints(changedPoints);
+    stepContext?.setPointList(changedPoints);
   };
 
   useEffect(() => {
-    getPoints()
-      .then((result) => result && setPoints(result))
-      .catch((e: any) => navigate(`/${AppRoute.NOT_FOUND}`));
+    if (stepContext?.pointList) {
+      getPoints()
+        .then((result) => {
+          if (result) {
+            setPoints(result);
+            stepContext?.setPointList(result);
+          }
+        })
+        .catch((e: any) => navigate(`/${AppRoute.NOT_FOUND}`));
+    }
   }, []);
 
   useEffect(() => {
