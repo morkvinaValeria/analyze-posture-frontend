@@ -3,15 +3,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import shrimpImage from '../../assets/img/shrimp.png';
 import { AppRoute } from '../../common/enums';
-import { ISideDetectedPoints } from '../../common/interfaces';
-import { DetectedPoints, Point } from '../../common/types';
+import { DetectedPoints } from '../../common/types';
 import { StepContext, UploadFileWithBase64 } from '../../contexts/step';
 import { DetectPointsService } from '../../services/detect-points.service';
-import ImageWithPoints from './image-with-points';
+import ImageWithLines from './image-with-lines';
 
 import styles from './styles.module.scss';
 
-const IdentifyPoints: React.FC = () => {
+const Assessment: React.FC = () => {
   const DISABLED_COLOR = 'grey';
   const navigate = useNavigate();
 
@@ -52,22 +51,6 @@ const IdentifyPoints: React.FC = () => {
     }
   };
 
-  const saveNewPosition = (newPoint: Record<string, Omit<Point, 'z'>>) => {
-    const changedPoints = {
-      ...points,
-      [currentFile.uid]: {
-        landmarks: {
-          ...points[currentFile.uid].landmarks,
-          ...newPoint,
-        },
-        sideView: points[currentFile.uid].sideView,
-        side:
-          (points[currentFile.uid] as ISideDetectedPoints).side || undefined,
-      } as DetectedPoints,
-    };
-    setPoints(changedPoints);
-  };
-
   useEffect(() => {
     getPoints()
       .then((result) => result && setPoints(result))
@@ -88,7 +71,7 @@ const IdentifyPoints: React.FC = () => {
 
   return (
     <>
-      <h5>Change positions of points if needed</h5>
+      <h5>Assessment</h5>
       <br />
       {isLoading === false && currentFile && points[currentFile.uid] ? (
         <div className={styles.imgSlider}>
@@ -100,10 +83,9 @@ const IdentifyPoints: React.FC = () => {
           >
             &#10094;
           </button>
-          <ImageWithPoints
+          <ImageWithLines
             file={currentFile}
             points={points[currentFile.uid]}
-            adjustPoints={saveNewPosition}
             key={currentFile?.index || -1}
           />
           <button
@@ -124,4 +106,4 @@ const IdentifyPoints: React.FC = () => {
   );
 };
 
-export default IdentifyPoints;
+export default Assessment;

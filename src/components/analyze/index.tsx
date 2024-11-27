@@ -1,5 +1,6 @@
 import React from 'react';
 import { StepProvider } from '../../contexts/step';
+import Assessment from '../assessment';
 import Menu from '../common/menu';
 import Stepper from '../common/stepper';
 import IdentifyPoints from '../identify-points';
@@ -24,6 +25,8 @@ const AnalyzePosture: React.FC = () => {
         return <UploadImages />;
       case 1:
         return <IdentifyPoints />;
+      case 2:
+        return <Assessment />;
       default:
         return <UploadImages />;
     }
