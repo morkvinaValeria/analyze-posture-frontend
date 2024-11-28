@@ -111,7 +111,7 @@ const IdentifyPoints: React.FC = () => {
 
   return (
     <>
-      <h5>Change positions of points if needed</h5>
+      <h5>Select Key Points for Analysis</h5>
       <br />
       {isLoading === false && currentFile && points[currentFile.uid] ? (
         <div className={styles.imgSlider}>
@@ -129,6 +129,94 @@ const IdentifyPoints: React.FC = () => {
             adjustPoints={saveNewPosition}
             key={currentFile?.index || -1}
           />
+          <div className={styles.description}>
+            <b>
+              Side:
+              {points[currentFile.uid].sideView
+                ? (points[currentFile.uid] as ISideDetectedPoints).side
+                : 'BACK/FRONT'}
+              {/*TODO: define side BACK/FRONT*/}
+            </b>
+            <p>
+              To perform an accurate analysis, please review the following key
+              anatomical points. These points are crucial for evaluating
+              alignment, symmetry, and functional movement:
+            </p>
+            {points[currentFile.uid].sideView ? (
+              <div>
+                <p>
+                  <b>1. Ear</b>
+                  <br />
+                  The lowest point of the ear (earlobe) is used to assess head
+                  position relative to the neck and shoulders, aiding in posture
+                  and balance evaluation.
+                </p>
+                <p>
+                  <b>2. Shoulder</b>
+                  <br />
+                  The highest point of the shoulder, typically the acromion, is
+                  identified to evaluate alignment and symmetry across the upper
+                  body.
+                </p>
+                <p>
+                  <b>3. Hip (Large Swivel Joint)</b>
+                  <br />
+                  The prominent point of the hip, usually the greater
+                  trochanter, serves as a reference for pelvic alignment and
+                  lower body posture analysis.
+                </p>
+                <p>
+                  <b>4. Knee</b>
+                  <br />
+                  The center of the knee joint, generally at the midpoint of the
+                  patella (kneecap), is crucial for analyzing leg alignment,
+                  load distribution, and movement mechanics.
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p>
+                  <b>1. Shoulders (Left and Right)</b>
+                  <br />
+                  Identify and select the highest point of both shoulders,
+                  typically the acromion. These points help evaluate shoulder
+                  height symmetry and overall upper body alignment.
+                </p>
+                <p>
+                  <b>2. Hips (Left and Right)</b>
+                  <br />
+                  Choose either the hip joint (greater trochanter) or the lowest
+                  point of the gluteal fold for each side. These points are
+                  critical for assessing pelvic alignment and lower body
+                  posture.
+                </p>
+                <p>
+                  <b>3. Knees (Left and Right)</b>
+                  <br />
+                  Mark the center of each knee joint, usually at the midpoint of
+                  the patella (kneecap). These points are vital for analyzing
+                  leg alignment and balance between the lower limbs.
+                </p>
+              </div>
+            )}
+            <h5>Automatic Selection and Manual Adjustment</h5>
+            <p>
+              Our system has automatically marked these points for your
+              convenience. However, if you notice that any of the points are not
+              correctly positioned, you are free to adjust them as needed.
+            </p>
+            <h6>How to Adjust:</h6>
+            <p>
+              1. Simply click on a point and drag it to the correct location.{' '}
+              <br></br>
+              2. Ensure Accuracy: Accurate point placement ensures reliable
+              analysis and meaningful insights.
+            </p>
+            <p>
+              This combination of automation and manual adjustment empowers you
+              to achieve precision and confidence in the analysis process.
+            </p>
+          </div>
           <button
             className={styles.next}
             onClick={() => changeFile(1)}

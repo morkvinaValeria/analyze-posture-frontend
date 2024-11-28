@@ -48,7 +48,7 @@ const Assessment: React.FC = () => {
 
   return (
     <>
-      <h5>Assessment</h5>
+      <h5>Assessment Results</h5>
       <br />
       {isLoading === false && currentFile && points[currentFile.uid] ? (
         <div className={styles.imgSlider}>
