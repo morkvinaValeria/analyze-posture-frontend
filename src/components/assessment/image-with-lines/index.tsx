@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
-import { FullLandmarks, SideLandmarks } from '../../../common/enums';
+import { FullLandmarks, Side, SideLandmarks } from '../../../common/enums';
 import { DetectedPoints, Point } from '../../../common/types';
 import { UploadFileWithBase64 } from '../../../contexts/step';
 
@@ -72,17 +72,22 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
 
   const calculateSideAngle = (
     p1: Omit<Point, 'z'>,
-    p2: Omit<Point, 'z'>
+    p2: Omit<Point, 'z'>,
+    side: Side
   ): number => {
     const left = p1.x < p2.x ? p1 : p2;
     const right = p1.x >= p2.x ? p1 : p2;
 
     if (left.x === right.x) {
       return 0;
-    } else if (left.x < right.x && -left.y < -right.y) {
+    } else if (left.x < right.x && -left.y < -right.y && side === Side.RIGHT) {
       return degrees(Math.atan((right.x - left.x) / -(right.y - left.y)));
-    } else if (left.x < right.x && -right.y < -left.y) {
+    } else if (left.x < right.x && -right.y < -left.y && side === Side.RIGHT) {
       return 180 - degrees(Math.atan((right.x - left.x) / -(left.y - right.y)));
+    } else if (left.x < right.x && -left.y < -right.y && side === Side.LEFT) {
+      return 180 - degrees(Math.atan((right.x - left.x) / -(right.y - left.y)));
+    } else if (left.x < right.x && -right.y < -left.y && side === Side.LEFT) {
+      return degrees(Math.atan((right.x - left.x) / -(left.y - right.y)));
     } else {
       return -1;
     }
@@ -90,7 +95,8 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
 
   const calculateAngles = (
     points: Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>,
-    sideView: boolean
+    sideView: boolean,
+    side: Side
   ): Record<string, number> => {
     const degrees: Record<string, number> = {};
     if (!sideView) {
@@ -111,7 +117,7 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
       parts.forEach((part) => {
         const part1 = points[part[0] as SideLandmarks];
         const part2 = points[part[1] as SideLandmarks];
-        const angle = calculateSideAngle(part1, part2);
+        const angle = calculateSideAngle(part1, part2, side);
         degrees[`${part[0]}-${part[1]}`] = angle;
       });
     }
@@ -125,7 +131,12 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
       const initPoints = calculateInitialPoints(points);
       setRelativePoints({ ...initPoints, ...relativePoints });
 
-      const calculatedAngles = calculateAngles(initPoints, points.sideView);
+      console.log('initPoints', initPoints);
+      const calculatedAngles = calculateAngles(
+        initPoints,
+        points.sideView,
+        points.sideView ? points.side : Side.RIGHT
+      );
       setAngles(calculatedAngles);
       console.log('angles', angles);
     }

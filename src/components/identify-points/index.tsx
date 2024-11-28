@@ -28,6 +28,11 @@ const IdentifyPoints: React.FC = () => {
     ...(stepContext?.fileList[0] as UploadFileWithBase64),
     index: 0,
   });
+  const filesWoPoints = (stepContext?.fileList || [])
+    .map((el) => el.uid)
+    .filter((el) => !Object.keys(stepContext?.pointList || {}).includes(el));
+  const [fileListWoPoints, setFileListWoPoints] =
+    useState<string[]>(filesWoPoints);
 
   const isPrevDisabled = () => currentFile?.index === 0;
   const isNextDisabled = () =>
@@ -38,6 +43,7 @@ const IdentifyPoints: React.FC = () => {
     const fileList = stepContext?.fileList || [];
     let points: Record<string, DetectedPoints> = {};
 
+    //TODO: getPoints only for fileListWoPoints && save points partially to not override existing ones
     for (let i = 0; i < fileList.length; i++) {
       const base64 = fileList[i].base64.split(',')[1];
       const uid = fileList[i].uid;
@@ -72,11 +78,19 @@ const IdentifyPoints: React.FC = () => {
   };
 
   useEffect(() => {
-    if (stepContext?.pointList) {
+    const filesWithPoints = Object.keys(stepContext?.pointList || {});
+    const fileListNames = (stepContext?.fileList || []).map((el) => el.uid);
+    filesWithPoints
+      .filter((el) => !fileListNames.includes(el))
+      .forEach((el) => delete stepContext?.pointList[el]);
+
+    if (filesWithPoints.length === 0 || fileListWoPoints.length > 0) {
+      console.log('getPoints');
       getPoints()
         .then((result) => {
           if (result) {
             setPoints(result);
+            setFileListWoPoints([]);
             stepContext?.setPointList(result);
           }
         })
@@ -85,16 +99,16 @@ const IdentifyPoints: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (Object.keys(points).length !== 0) {
+    if (Object.keys(points).length !== 0 || fileListWoPoints.length > 0) {
       setIsLoading(false);
     }
-  }, [points, currentFile]);
+  }, [points, currentFile, fileListWoPoints]);
 
   useEffect(() => {
-    if (!points[currentFile.uid]) {
+    if (!points[currentFile.uid] || fileListWoPoints.length > 0) {
       setIsLoading(true);
     }
-  }, [currentFile]);
+  }, [currentFile, fileListWoPoints]);
 
   return (
     <>
