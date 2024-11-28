@@ -85,7 +85,6 @@ const IdentifyPoints: React.FC = () => {
       .forEach((el) => delete stepContext?.pointList[el]);
 
     if (filesWithPoints.length === 0 || fileListWoPoints.length > 0) {
-      console.log('getPoints');
       getPoints()
         .then((result) => {
           if (result) {
