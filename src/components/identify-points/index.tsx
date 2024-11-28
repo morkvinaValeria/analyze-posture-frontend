@@ -131,7 +131,7 @@ const IdentifyPoints: React.FC = () => {
           />
           <div className={styles.description}>
             <b>
-              Side:
+              Side:&nbsp;
               {points[currentFile.uid].sideView
                 ? (points[currentFile.uid] as ISideDetectedPoints).side
                 : 'BACK/FRONT'}
@@ -145,54 +145,83 @@ const IdentifyPoints: React.FC = () => {
             {points[currentFile.uid].sideView ? (
               <div>
                 <p>
-                  <b>1. Ear</b>
-                  <br />
+                  <div className={styles.dotWithText}>
+                    <b>1. Ear</b> <div className={styles.dotEar}></div>
+                  </div>
                   The lowest point of the ear (earlobe) is used to assess head
                   position relative to the neck and shoulders, aiding in posture
                   and balance evaluation.
                 </p>
                 <p>
-                  <b>2. Shoulder</b>
-                  <br />
+                  <div className={styles.dotWithText}>
+                    <b>2. Shoulder</b>
+                    <div className={styles.dotShoulder}></div>
+                  </div>
                   The highest point of the shoulder, typically the acromion, is
                   identified to evaluate alignment and symmetry across the upper
                   body.
                 </p>
                 <p>
-                  <b>3. Hip (Large Swivel Joint)</b>
-                  <br />
+                  <div className={styles.dotWithText}>
+                    <b>3. Hip (Large Swivel Joint)</b>
+                    <div className={styles.dotHip}></div>
+                  </div>
                   The prominent point of the hip, usually the greater
                   trochanter, serves as a reference for pelvic alignment and
                   lower body posture analysis.
                 </p>
                 <p>
-                  <b>4. Knee</b>
-                  <br />
+                  <div className={styles.dotWithText}>
+                    <b>4. Knee</b>
+                    <div className={styles.dotKnee}></div>
+                  </div>
                   The center of the knee joint, generally at the midpoint of the
                   patella (kneecap), is crucial for analyzing leg alignment,
                   load distribution, and movement mechanics.
+                </p>
+                <p>
+                  <div className={styles.dotWithText}>
+                    <b>5. Ankle</b>
+                    <div className={styles.dotAnkle}></div>
+                  </div>
+                  The center of ankle joint, typically at the midpoint between
+                  the inner and outer ankle bones (medial and lateral malleoli).
+                  This point is crucial for evaluating foot alignment and the
+                  connection between lower limb mechanics and balance.
                 </p>
               </div>
             ) : (
               <div>
                 <p>
-                  <b>1. Shoulders (Left and Right)</b>
-                  <br />
+                  <div className={styles.dotWithText}>
+                    <b>1. Shoulders (Left </b>
+                    <div className={styles.dotLeftShoulder} />
+                    <b> &nbsp;and Right </b>
+                    <div className={styles.dotRightShoulder} />)
+                  </div>
                   Identify and select the highest point of both shoulders,
                   typically the acromion. These points help evaluate shoulder
                   height symmetry and overall upper body alignment.
                 </p>
                 <p>
-                  <b>2. Hips (Left and Right)</b>
-                  <br />
+                  <div className={styles.dotWithText}>
+                    <b>2. Hips (Left </b>
+                    <div className={styles.dotLeftHip} />
+                    <b> &nbsp;and Right </b>
+                    <div className={styles.dotRightHip} />)
+                  </div>
                   Choose either the hip joint (greater trochanter) or the lowest
                   point of the gluteal fold for each side. These points are
                   critical for assessing pelvic alignment and lower body
                   posture.
                 </p>
                 <p>
-                  <b>3. Knees (Left and Right)</b>
-                  <br />
+                  <div className={styles.dotWithText}>
+                    <b>3. Knees (Left </b>
+                    <div className={styles.dotLeftKnee} />
+                    <b> &nbsp;and Right </b>
+                    <div className={styles.dotRightKnee} />)
+                  </div>
                   Mark the center of each knee joint, usually at the midpoint of
                   the patella (kneecap). These points are vital for analyzing
                   leg alignment and balance between the lower limbs.

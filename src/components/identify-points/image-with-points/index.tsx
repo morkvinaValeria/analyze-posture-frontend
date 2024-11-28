@@ -117,7 +117,7 @@ const ImageWithPoints: React.FC<Props> = ({
           key={key}
           defaultClassName={`${DRAGGABLE_CLASS_NAME}${key}`}
         >
-          <div className={styles.dot}></div>
+          <div className={styles[`dot-${key}`]}></div>
         </Draggable>
       ))}
     </div>

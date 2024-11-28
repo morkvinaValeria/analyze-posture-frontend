@@ -9,17 +9,60 @@
   }
 }
 
-.dot {
+.dot-shoulder,
+.dot-ear,
+.dot-hip,
+.dot-knee,
+.dot-ankle,
+.dot-rightShoulder,
+.dot-leftShoulder,
+.dot-rightHip,
+.dot-leftHip,
+.dot-rightKnee,
+.dot-leftKnee {
   position: relative;
   display: block;
 }
-.dot::after {
+
+.dot-shoulder::after,
+.dot-ear::after,
+.dot-hip::after,
+.dot-knee::after,
+.dot-ankle::after,
+.dot-rightShoulder::after,
+.dot-leftShoulder::after,
+.dot-rightHip::after,
+.dot-leftHip::after,
+.dot-rightKnee::after,
+.dot-leftKnee::after {
   content: '';
   display: block;
   position: absolute;
   height: 10px;
   width: 10px;
-  background-color: #f78666;
   border-radius: 50%;
   border: 1px solid aliceblue;
+}
+.dot-ear::after,
+.dot-leftShoulder::after {
+  background-color: #f8e434;
+}
+.dot-shoulder::after,
+.dot-rightShoulder::after {
+  background-color: #f93434;
+}
+.dot-hip::after,
+.dot-leftHip::after {
+  background-color: #3ef934;
+}
+.dot-knee::after,
+.dot-rightHip::after {
+  background-color: #3455f9;
+}
+.dot-ankle::after,
+.dot-leftKnee::after {
+  background-color: #f603b9;
+}
+.dot-rightKnee::after {
+  background-color: #000000;
 }
