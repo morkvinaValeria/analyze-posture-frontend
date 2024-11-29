@@ -71,7 +71,7 @@ const UploadImages: React.FC = () => {
   );
 
   return (
-    <>
+    <div className={styles.uploadContainer}>
       <h5>Upload Your Photos</h5>
       <p>
         To receive an accurate assessment of your posture, please provide clear
@@ -129,7 +129,7 @@ const UploadImages: React.FC = () => {
         (avoid baggy or loose clothing). Ensure that the arms, legs, and torso
         are visible for better assessment.
       </p>
-    </>
+    </div>
   );
 };
 

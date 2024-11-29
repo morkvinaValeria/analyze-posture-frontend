@@ -1,5 +1,11 @@
-.note {
-  color: gray;
-  padding-top: 0.5em;
-  font-size: small;
+.uploadContainer {
+  .note {
+    color: gray;
+    padding-top: 0.5em;
+    font-size: small;
+  }
+
+  p {
+    width: 75em;
+  }
 }

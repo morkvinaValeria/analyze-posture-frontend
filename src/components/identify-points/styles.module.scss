@@ -23,6 +23,61 @@
   width: 40em;
   margin-left: 3em;
   margin-right: 1em;
+
+  p {
+    width: 40em;
+  }
+  h5,
+  p,
+  h4 {
+    color: #321f19;
+  }
+  .dotWithText {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .dotEar,
+  .dotShoulder,
+  .dotHip,
+  .dotKnee,
+  .dotAnkle,
+  .dotLeftShoulder,
+  .dotRightShoulder,
+  .dotLeftHip,
+  .dotRightHip,
+  .dotLeftKnee,
+  .dotRightKnee {
+    margin-left: 0.2em;
+    display: block;
+    height: 1.2em;
+    width: 1.2em;
+    border-radius: 50%;
+  }
+
+  .dotEar,
+  .dotLeftShoulder {
+    background-color: #f8e434;
+  }
+  .dotShoulder,
+  .dotRightShoulder {
+    background-color: #f93434;
+  }
+  .dotHip,
+  .dotLeftHip {
+    background-color: #3ef934;
+  }
+  .dotKnee,
+  .dotRightHip {
+    background-color: #3455f9;
+  }
+  .dotAnkle,
+  .dotLeftKnee {
+    background-color: #f603b9;
+  }
+  .dotRightKnee {
+    background-color: #000000;
+  }
 }
 .spinnerContainer {
   display: flex;
@@ -33,57 +88,6 @@
     width: 4em;
     height: 4em;
   }
-}
-h5,
-p,
-h4 {
-  color: #321f19;
-}
-.dotWithText {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.dotEar,
-.dotShoulder,
-.dotHip,
-.dotKnee,
-.dotAnkle,
-.dotLeftShoulder,
-.dotRightShoulder,
-.dotLeftHip,
-.dotRightHip,
-.dotLeftKnee,
-.dotRightKnee {
-  margin-left: 0.2em;
-  display: block;
-  height: 1.2em;
-  width: 1.2em;
-  border-radius: 50%;
-}
-
-.dotEar,
-.dotLeftShoulder {
-  background-color: #f8e434;
-}
-.dotShoulder,
-.dotRightShoulder {
-  background-color: #f93434;
-}
-.dotHip,
-.dotLeftHip {
-  background-color: #3ef934;
-}
-.dotKnee,
-.dotRightHip {
-  background-color: #3455f9;
-}
-.dotAnkle,
-.dotLeftKnee {
-  background-color: #f603b9;
-}
-.dotRightKnee {
-  background-color: #000000;
 }
 
 @media (prefers-reduced-motion: no-preference) {

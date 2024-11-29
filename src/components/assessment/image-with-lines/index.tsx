@@ -10,9 +10,14 @@ import styles from './styles.module.scss';
 type Props = {
   file: UploadFileWithBase64;
   points: DetectedPoints;
+  saveAngles: (angles: Record<string, number>) => void;
 };
 
-const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
+const ImageWithLines: React.FC<Props> = ({
+  file,
+  points,
+  saveAngles,
+}: Props) => {
   const POINT_RADIUS = 5;
   const DRAGGABLE_CLASS_NAME = 'react-draggable-key-';
   const FULL_VIEW_PARTS = ['Shoulder', 'Hip', 'Knee'];
@@ -129,6 +134,7 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
       });
     }
 
+    saveAngles(degrees);
     return degrees;
   };
 

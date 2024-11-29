@@ -19,6 +19,24 @@
     box-shadow: none;
   }
 }
+.thankYou {
+  width: 75em;
+}
+.description {
+  width: 40em;
+  margin-left: 3em;
+  margin-right: 1em;
+}
+h5,
+p,
+h4 {
+  color: #321f19;
+}
+.dotWithText {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 .spinnerContainer {
   display: flex;
   justify-content: center;
