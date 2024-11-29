@@ -15,6 +15,16 @@ type Props = {
 const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
   const POINT_RADIUS = 5;
   const DRAGGABLE_CLASS_NAME = 'react-draggable-key-';
+  const FULL_VIEW_PARTS = ['Shoulder', 'Hip', 'Knee'];
+  const SIDE_VIEW_PARTS = [
+    ['ear', 'shoulder'],
+    ['shoulder', 'hip'],
+    ['hip', 'knee'],
+    ['knee', 'ankle'],
+  ];
+  const BACK_EXCEPTION_LINES = ['rightShoulder', 'rightHip', 'rightKnee'];
+  const FRONT_EXCEPTION_LINES = ['leftShoulder', 'leftHip', 'leftKnee'];
+  const SIDE_EXCEPTION_LINES = ['ankle'];
 
   const imageRef = useRef<HTMLImageElement>(null);
   const pointsContainer = useRef<HTMLDivElement>(null);
@@ -22,7 +32,9 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
   const [relativePoints, setRelativePoints] = useState<
     Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>
   >({} as Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>);
-  const [angles, setAngles] = useState<Record<string, number>>();
+  const [angles, setAngles] = useState<Record<string, number>>({});
+  const [exceptionLines, setExceptionLines] = useState<string[]>([]);
+  const [side, setSide] = useState<Side>();
 
   const calculateInitialPoints = (
     points: DetectedPoints
@@ -53,17 +65,17 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
   ): number => {
     if (p1.y === p2.y) {
       return 0;
-      //back side
     } else if (p1.x < p2.x && -p1.y > -p2.y) {
+      setExceptionLines(BACK_EXCEPTION_LINES);
       return degrees(Math.atan(-(p1.y - p2.y) / (p2.x - p1.x)));
-      //back side
     } else if (p1.x < p2.x && -p1.y < -p2.y) {
+      setExceptionLines(BACK_EXCEPTION_LINES);
       return 180 - degrees(Math.atan(-(p2.y - p1.y) / (p2.x - p1.x)));
-      //front side
     } else if (p2.x < p1.x && -p2.y > -p1.y) {
+      setExceptionLines(FRONT_EXCEPTION_LINES);
       return 180 - degrees(Math.atan(-(p2.y - p1.y) / (p1.x - p2.x)));
-      //front side
     } else if (p2.x < p1.x && -p2.y < -p1.y) {
+      setExceptionLines(FRONT_EXCEPTION_LINES);
       return degrees(Math.atan(-(p1.y - p2.y) / (p1.x - p2.x)));
     } else {
       return -1;
@@ -77,6 +89,8 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
   ): number => {
     const left = p1.x < p2.x ? p1 : p2;
     const right = p1.x >= p2.x ? p1 : p2;
+    setExceptionLines(SIDE_EXCEPTION_LINES);
+    setSide(side);
 
     if (left.x === right.x) {
       return 0;
@@ -100,21 +114,14 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
   ): Record<string, number> => {
     const degrees: Record<string, number> = {};
     if (!sideView) {
-      const parts = ['Shoulder', 'Hip', 'Knee'];
-      parts.forEach((part) => {
+      FULL_VIEW_PARTS.forEach((part) => {
         const right = points[`right${part}` as FullLandmarks];
         const left = points[`left${part}` as FullLandmarks];
         const angle = calculateBackAngle(left, right);
         degrees[`${part.toLowerCase()}s`] = angle;
       });
     } else {
-      const parts = [
-        ['ear', 'shoulder'],
-        ['shoulder', 'hip'],
-        ['hip', 'knee'],
-        ['knee', 'ankle'],
-      ];
-      parts.forEach((part) => {
+      SIDE_VIEW_PARTS.forEach((part) => {
         const part1 = points[part[0] as SideLandmarks];
         const part2 = points[part[1] as SideLandmarks];
         const angle = calculateSideAngle(part1, part2, side);
@@ -123,6 +130,66 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
     }
 
     return degrees;
+  };
+
+  const getView = (bodyPart: string) => {
+    let isSideView = true;
+    let fullViewPart = '';
+    FULL_VIEW_PARTS.forEach((part) => {
+      if (!bodyPart.includes(part) === false) {
+        isSideView = !bodyPart.includes(part);
+        fullViewPart = part;
+        return;
+      }
+    });
+    return { isSideView, fullViewPart };
+  };
+
+  const getAngleDegree = (bodyPart: string): number => {
+    const { isSideView, fullViewPart } = getView(bodyPart);
+    if (isSideView) {
+      const sideViewAngleKey = Object.keys(angles).find((key) =>
+        key.includes(`${bodyPart}-`)
+      ) as string;
+      const resAngle = angles[sideViewAngleKey];
+      const k1 = side === Side.RIGHT ? 1 : -1;
+      const k2 = side === Side.RIGHT ? -90 : 90;
+
+      return resAngle < 90 ? 90 + resAngle * k1 : (resAngle + k2) * k1;
+    } else {
+      const foundAngle = angles[`${fullViewPart.toLowerCase()}s`];
+      const k1 = exceptionLines[0] === FRONT_EXCEPTION_LINES[0] ? 1 : -1;
+      const k2 = exceptionLines[0] === FRONT_EXCEPTION_LINES[0] ? -1 : 1;
+
+      return foundAngle > 90 ? (180 - foundAngle) * k1 : foundAngle * k2;
+    }
+  };
+
+  const getLengthBeetweenPoints = (
+    p1: Omit<Point, 'z'>,
+    p2: Omit<Point, 'z'>
+  ): number => {
+    return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+  };
+
+  const calculateWidth = (
+    bodyPart: string,
+    pointsList: Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>
+  ): number => {
+    const { isSideView, fullViewPart } = getView(bodyPart);
+    const point1 = pointsList[bodyPart as FullLandmarks | SideLandmarks];
+
+    if (!isSideView) {
+      const foundKey = Object.keys(pointsList).find(
+        (key) => key.includes(fullViewPart) && key !== bodyPart
+      ) as FullLandmarks | SideLandmarks;
+      return getLengthBeetweenPoints(point1, pointsList[foundKey]);
+    } else {
+      const foundKey = (
+        SIDE_VIEW_PARTS.find((part) => part[0] === bodyPart) as string[]
+      )[1] as FullLandmarks | SideLandmarks;
+      return getLengthBeetweenPoints(point1, pointsList[foundKey]);
+    }
   };
 
   useEffect(() => {
@@ -159,20 +226,23 @@ const ImageWithLines: React.FC<Props> = ({ file, points }: Props) => {
             disabled={true}
             defaultClassName={`${DRAGGABLE_CLASS_NAME}${key}`}
           >
-            <div className={styles.dot}></div>
+            <div className={styles.dot}>
+              {exceptionLines.includes(key) ? (
+                <></>
+              ) : (
+                <div
+                  className={styles.line}
+                  style={{
+                    width: `${calculateWidth(key, relativePoints)}px`,
+                    transform: `translate(5.5px, 5px) rotate(${getAngleDegree(
+                      key
+                    )}deg)`,
+                    transformOrigin: 'left',
+                  }}
+                ></div>
+              )}
+            </div>
           </Draggable>
-
-          {/* <Draggable
-            position={point}
-            key={key}
-            disabled={true}
-            defaultClassName={`${DRAGGABLE_CLASS_NAME}${key}`}
-          >
-            <div
-              className={styles.line}
-              style={{ width: `Math.sqrt(((x2-x1) * (x2-x1)) + ((y2-y1) * (y2-y1)))` }}
-            ></div>
-          </Draggable> */}
         </>
       ))}
     </div>

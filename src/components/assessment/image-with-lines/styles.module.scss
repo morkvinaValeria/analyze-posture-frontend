@@ -19,20 +19,22 @@
   position: absolute;
   height: 10px;
   width: 10px;
-  background-color: #f78666;
+  background-color: #f7666b;
   border-radius: 50%;
   border: 1px solid aliceblue;
 }
 
 .line {
   position: relative;
+  min-width: 10px;
 }
 
 .line::after {
+  content: '';
   position: absolute;
-  width: 100px;
-  height: 1px;
-  border: solid 1px black;
-  left: 3;
-  transform: rotate(50deg);
+  width: inherit;
+  height: 2px;
+  border: solid 1px #f7666b;
+  background-color: #f7666b;
+  left: 3px;
 }
