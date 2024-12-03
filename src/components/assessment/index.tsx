@@ -1,15 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import shrimpImage from '../../assets/img/shrimp.png';
+import { AppRoute } from '../../common/enums';
+import {
+  IFullPosturePrediction,
+  ISidePosturePrediction,
+} from '../../common/interfaces';
 import { DetectedPoints } from '../../common/types';
 import { StepContext, UploadFileWithBase64 } from '../../contexts/step';
+import { PredictPostureService } from '../../services/predict-posture.service';
 import ImageWithLines from './image-with-lines';
+import Prediction from './prediction';
 
 import styles from './styles.module.scss';
 
 const Assessment: React.FC = () => {
   const DISABLED_COLOR = 'grey';
+  const navigate = useNavigate();
 
+  const predictPostureService = new PredictPostureService();
   const stepContext = useContext(StepContext);
 
   const [points] = useState<Record<string, DetectedPoints>>({
@@ -23,6 +33,9 @@ const Assessment: React.FC = () => {
     ...(stepContext?.fileList[0] as UploadFileWithBase64),
     index: 0,
   });
+  const [prediction, setPrediction] = useState<
+    ISidePosturePrediction | IFullPosturePrediction
+  >();
 
   const isPrevDisabled = () => currentFile?.index === 0;
   const isNextDisabled = () =>
@@ -35,7 +48,7 @@ const Assessment: React.FC = () => {
     }
   };
   const revertAnglesToShow = (angles: Record<string, number>) => {
-    const newAngles = { shoulders: -100 };
+    const newAngles = {} as Record<string, number>;
     Object.keys(angles).forEach(
       (key) =>
         (newAngles[key as keyof typeof newAngles] =
@@ -43,6 +56,31 @@ const Assessment: React.FC = () => {
     );
     setAngles(newAngles);
   };
+
+  const getPrediction = async (): Promise<
+    ISidePosturePrediction | IFullPosturePrediction
+  > => {
+    const postureAngles = Object.values(angles).map((angle) =>
+      angle.toString()
+    );
+
+    return predictPostureService.predictPosture(
+      postureAngles,
+      points[currentFile.uid].sideView
+    );
+  };
+
+  useEffect(() => {
+    if (Object.values(angles).length !== 0) {
+      getPrediction()
+        .then((result) => {
+          if (result) {
+            setPrediction(result);
+          }
+        })
+        .catch((e: any) => navigate(`/${AppRoute.NOT_FOUND}`));
+    }
+  }, [angles]);
 
   useEffect(() => {
     if (Object.keys(points).length !== 0) {
@@ -112,27 +150,11 @@ const Assessment: React.FC = () => {
                 </p>
               </div>
             )}
-            <b>Posture Classification</b>
-            <p>
-              Using neural network algorithms, your posture is categorized into
-              specific classifications (e.g., neutral, scoliotic, kyphotic).
-              This classification helps identify patterns that may contribute to
-              discomfort or movement inefficiencies.
-            </p>
-            <b>Recommended Exercises</b>
-            <p>
-              Based on your results, we’ve curated a set of exercises designed
-              to address your unique posture needs:
-            </p>
-            <div>
-              <p>
-                🤸‍♀️ Ex 1
-                <br />
-                🤸‍♀️ Ex 2
-                <br />
-                🤸‍♀️ Ex 3
-              </p>
-            </div>
+            <Prediction
+              predictedResult={
+                prediction as IFullPosturePrediction | ISidePosturePrediction
+              }
+            ></Prediction>
           </div>
           <button
             className={styles.next}

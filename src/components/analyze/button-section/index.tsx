@@ -3,6 +3,8 @@ import { Button } from 'react-bootstrap';
 import { StepContext } from '../../../contexts/step';
 
 import styles from './styles.module.scss';
+import { AppRoute } from '../../../common/enums';
+import Link from '../../common/link';
 
 type Props = {
   currentStep: number;
@@ -30,19 +32,26 @@ const ButtonSection: React.FC<Props> = ({
         >
           Back
         </Button>
-
-        <Button
-          onClick={onClickNext}
-          className={styles.stepperButton}
-          variant="success"
-          disabled={
-            currentStep === numberOfSteps - 1 || !stepContext?.isNextValid
-              ? true
-              : false
-          }
-        >
-          Next
-        </Button>
+        {currentStep === numberOfSteps - 1 ? (
+          <Link to={AppRoute.ROOT}>
+            <Button
+              className={styles.stepperButton}
+              variant="success"
+              disabled={!stepContext?.isNextValid ? true : false}
+            >
+              Finish
+            </Button>
+          </Link>
+        ) : (
+          <Button
+            onClick={onClickNext}
+            className={styles.stepperButton}
+            variant="success"
+            disabled={!stepContext?.isNextValid ? true : false}
+          >
+            Next
+          </Button>
+        )}
       </section>
     </>
   );
