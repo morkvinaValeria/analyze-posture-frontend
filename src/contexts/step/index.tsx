@@ -11,9 +11,15 @@ export interface StepContextType {
   fileList: UploadFileWithBase64[];
   isNextValid: boolean;
   pointList: Record<string, DetectedPoints>;
+  isStatisticalMode: boolean;
+  statisticalPoints: Record<string, DetectedPoints>;
+  statisticalFileList: UploadFileWithBase64[];
   setFileList: (fileList: UploadFileWithBase64[]) => void;
   setIsNextValid: (flag: boolean) => void;
   setPointList: (pointList: Record<string, DetectedPoints>) => void;
+  setIsStatisticalMode: (flag: boolean) => void;
+  setStatisticalPoints: (pointList: Record<string, DetectedPoints>) => void;
+  setStatisticalFileList: (fileList: UploadFileWithBase64[]) => void;
 }
 
 interface StepContextProps {
@@ -23,20 +29,34 @@ interface StepContextProps {
 export const StepContext = React.createContext<StepContextType | null>(null);
 
 export const StepProvider = ({ children }: StepContextProps) => {
-  const [fl, setfl] = React.useState<UploadFileWithBase64[]>([]);
+  const [fileList, setFileList] = React.useState<UploadFileWithBase64[]>([]);
   const [isNextValid, setIsNextValid] = React.useState<boolean>(false);
   const [pointList, setPointList] = React.useState<
     Record<string, DetectedPoints>
   >({});
+  const [isStatisticalMode, setIsStatisticalMode] =
+    React.useState<boolean>(false);
+  const [statisticalPoints, setStatisticalPoints] = React.useState<
+    Record<string, DetectedPoints>
+  >({});
+  const [statisticalFileList, setStatisticalFileList] = React.useState<
+    UploadFileWithBase64[]
+  >([]);
   return (
     <StepContext.Provider
       value={{
-        fileList: fl,
+        fileList,
         isNextValid,
         pointList,
-        setFileList: (fileList: UploadFileWithBase64[]) => setfl(fileList),
+        isStatisticalMode,
+        statisticalPoints,
+        statisticalFileList,
+        setFileList,
         setIsNextValid,
         setPointList,
+        setIsStatisticalMode,
+        setStatisticalPoints,
+        setStatisticalFileList,
       }}
     >
       {children}

@@ -27,16 +27,36 @@
   margin-left: 3em;
   margin-right: 1em;
   align-self: flex-start;
+
+  .dotsContainer {
+    margin-left: 2em;
+
+    .dotWithText {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .dotStatColor,
+      .dotInitColor {
+        margin-right: 0.2em;
+        display: block;
+        height: 1.2em;
+        width: 1.2em;
+        border-radius: 50%;
+      }
+      .dotStatColor {
+        background-color: #b366f7;
+      }
+      .dotInitColor {
+        background-color: #f7666b;
+      }
+    }
+  }
 }
 h5,
 p,
 h4 {
   color: #321f19;
-}
-.dotWithText {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
 }
 .spinnerContainer {
   display: flex;

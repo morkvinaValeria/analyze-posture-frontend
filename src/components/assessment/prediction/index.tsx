@@ -66,13 +66,6 @@ const Prediction: React.FC<Props> = ({ predictedResult }: Props) => {
             <div className={styles.predictionItem}>
               <p>
                 {element.description}
-                {/* {element.description.split(' posture').map((el, i) => {
-                  if (i === 0) {
-                    return <b>{el} posture</b>;
-                  } else {
-                    return <text>{el}</text>;
-                  }
-                })} */}
                 <br />
                 Probability:&nbsp;
                 {Math.round(element.probability * 100)}%

@@ -11,12 +11,14 @@ type Props = {
   file: UploadFileWithBase64;
   points: DetectedPoints;
   saveAngles: (angles: Record<string, number>) => void;
+  statisticalPoints?: DetectedPoints;
 };
 
 const ImageWithLines: React.FC<Props> = ({
   file,
   points,
   saveAngles,
+  statisticalPoints = {} as DetectedPoints,
 }: Props) => {
   const POINT_RADIUS = 5;
   const DRAGGABLE_CLASS_NAME = 'react-draggable-key-';
@@ -37,7 +39,13 @@ const ImageWithLines: React.FC<Props> = ({
   const [relativePoints, setRelativePoints] = useState<
     Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>
   >({} as Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>);
+  const [statisticalRelativePoints, setStatisticalRelativePoints] = useState<
+    Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>
+  >({} as Record<FullLandmarks | SideLandmarks, Omit<Point, 'z'>>);
   const [angles, setAngles] = useState<Record<string, number>>({});
+  const [statisticalAngles, setStatisticalAngles] = useState<
+    Record<string, number>
+  >({});
   const [exceptionLines, setExceptionLines] = useState<string[]>([]);
   const [side, setSide] = useState<Side>();
 
@@ -151,19 +159,23 @@ const ImageWithLines: React.FC<Props> = ({
     return { isSideView, fullViewPart };
   };
 
-  const getAngleDegree = (bodyPart: string): number => {
+  const getAngleDegree = (
+    bodyPart: string,
+    isStatistical: boolean = false
+  ): number => {
     const { isSideView, fullViewPart } = getView(bodyPart);
+    const neededAngles = !isStatistical ? angles : statisticalAngles;
     if (isSideView) {
-      const sideViewAngleKey = Object.keys(angles).find((key) =>
+      const sideViewAngleKey = Object.keys(neededAngles).find((key) =>
         key.includes(`${bodyPart}-`)
       ) as string;
-      const resAngle = angles[sideViewAngleKey];
+      const resAngle = neededAngles[sideViewAngleKey];
       const k1 = side === Side.RIGHT ? 1 : -1;
       const k2 = side === Side.RIGHT ? -90 : 90;
 
       return resAngle < 90 ? 90 + resAngle * k1 : (resAngle + k2) * k1;
     } else {
-      const foundAngle = angles[`${fullViewPart.toLowerCase()}s`];
+      const foundAngle = neededAngles[`${fullViewPart.toLowerCase()}s`];
       const k1 = exceptionLines[0] === FRONT_EXCEPTION_LINES[0] ? 1 : -1;
       const k2 = exceptionLines[0] === FRONT_EXCEPTION_LINES[0] ? -1 : 1;
 
@@ -212,6 +224,22 @@ const ImageWithLines: React.FC<Props> = ({
       );
       setAngles(calculatedAngles);
       console.log('angles', angles);
+
+      if (Object.keys(statisticalPoints).length) {
+        const statisticalInitPoints = calculateInitialPoints(statisticalPoints);
+        setStatisticalRelativePoints({
+          ...statisticalInitPoints,
+          ...statisticalRelativePoints,
+        });
+        console.log('statisticalInitPoints', statisticalInitPoints);
+        const calculatedAngles = calculateAngles(
+          statisticalInitPoints,
+          points.sideView,
+          points.sideView ? points.side : Side.RIGHT
+        );
+        setStatisticalAngles(calculatedAngles);
+        console.log('statistical angles', calculatedAngles);
+      }
     }
   }, [imageRef.current]);
 
@@ -242,6 +270,37 @@ const ImageWithLines: React.FC<Props> = ({
                     width: `${calculateWidth(key, relativePoints)}px`,
                     transform: `translate(5.5px, 5px) rotate(${getAngleDegree(
                       key
+                    )}deg)`,
+                    transformOrigin: 'left',
+                  }}
+                ></div>
+              )}
+            </div>
+          </Draggable>
+        </>
+      ))}
+      {Object.entries(statisticalRelativePoints).map(([key, point], i) => (
+        <>
+          <Draggable
+            position={point}
+            key={key}
+            disabled={true}
+            defaultClassName={`${DRAGGABLE_CLASS_NAME}${key}`}
+          >
+            <div className={styles.statisticalDot}>
+              {exceptionLines.includes(key) ? (
+                <></>
+              ) : (
+                <div
+                  className={styles.statisticalLine}
+                  style={{
+                    width: `${calculateWidth(
+                      key,
+                      statisticalRelativePoints
+                    )}px`,
+                    transform: `translate(5.5px, 5px) rotate(${getAngleDegree(
+                      key,
+                      true
                     )}deg)`,
                     transformOrigin: 'left',
                   }}

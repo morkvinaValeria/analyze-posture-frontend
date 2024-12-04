@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import rfdc from 'rfdc';
 import shrimpImage from '../../assets/img/shrimp.png';
-import { AppRoute } from '../../common/enums';
+import { AppRoute, FullLandmarks, SideLandmarks } from '../../common/enums';
 import { ISideDetectedPoints } from '../../common/interfaces';
 import { DetectedPoints, Point } from '../../common/types';
 import { StepContext, UploadFileWithBase64 } from '../../contexts/step';
@@ -13,8 +14,10 @@ import styles from './styles.module.scss';
 
 const IdentifyPoints: React.FC = () => {
   const DISABLED_COLOR = 'grey';
-  const navigate = useNavigate();
+  const BEFORE_SLEEP_WEIGHT = 0.4;
 
+  const navigate = useNavigate();
+  const clone = rfdc();
   const stepContext = useContext(StepContext);
   const detectPointsService = new DetectPointsService();
 
@@ -77,6 +80,32 @@ const IdentifyPoints: React.FC = () => {
     stepContext?.setPointList(changedPoints);
   };
 
+  const add = (accumulator: number, a: number) => accumulator + a;
+
+  const calculateStatPoints = (points: Record<string, DetectedPoints>) => {
+    const listWithPoints = Object.values(points);
+    const ordWeight = (1 - BEFORE_SLEEP_WEIGHT) / (listWithPoints.length - 1);
+
+    const statPoints = clone(listWithPoints[listWithPoints.length - 1]);
+    const landmarksKeys = Object.keys(statPoints.landmarks) as (FullLandmarks &
+      SideLandmarks)[];
+
+    landmarksKeys.forEach((landmarkKey) => {
+      const bsPoint = statPoints.landmarks[landmarkKey] as Point;
+      const otherPointsX = listWithPoints
+        .slice(0, -1)
+        .map((el) => (el.landmarks[landmarkKey] as Point).x * ordWeight);
+      const otherPointsY = listWithPoints
+        .slice(0, -1)
+        .map((el) => (el.landmarks[landmarkKey] as Point).y * ordWeight);
+
+      bsPoint.x = bsPoint.x * BEFORE_SLEEP_WEIGHT + otherPointsX.reduce(add, 0);
+      bsPoint.y = bsPoint.y * BEFORE_SLEEP_WEIGHT + otherPointsY.reduce(add, 0);
+    });
+
+    return { [Object.keys(points)[listWithPoints.length - 1]]: statPoints };
+  };
+
   useEffect(() => {
     const filesWithPoints = Object.keys(stepContext?.pointList || {});
     const fileListNames = (stepContext?.fileList || []).map((el) => el.uid);
@@ -102,6 +131,23 @@ const IdentifyPoints: React.FC = () => {
       setIsLoading(false);
     }
   }, [points, currentFile, fileListWoPoints]);
+
+  useEffect(() => {
+    if (Object.keys(points).length !== 0) {
+      stepContext?.setStatisticalPoints({});
+      stepContext?.setStatisticalFileList([]);
+
+      if (stepContext?.isStatisticalMode) {
+        const calcStatPoints = calculateStatPoints(points);
+        const foundFile =
+          stepContext?.fileList.find(
+            (el) => el.uid === Object.keys(calcStatPoints)[0]
+          ) || ({} as UploadFileWithBase64);
+        stepContext?.setStatisticalPoints(calcStatPoints);
+        stepContext?.setStatisticalFileList([foundFile]);
+      }
+    }
+  }, [points, currentFile]);
 
   useEffect(() => {
     if (!points[currentFile.uid] || fileListWoPoints.length > 0) {

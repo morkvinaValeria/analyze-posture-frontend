@@ -10,6 +10,7 @@ import {
 import { DetectedPoints } from '../../common/types';
 import { StepContext, UploadFileWithBase64 } from '../../contexts/step';
 import { PredictPostureService } from '../../services/predict-posture.service';
+import ToggleSwitch from '../common/toggle-switch';
 import ImageWithLines from './image-with-lines';
 import Prediction from './prediction';
 
@@ -25,12 +26,17 @@ const Assessment: React.FC = () => {
   const [points] = useState<Record<string, DetectedPoints>>({
     ...stepContext?.pointList,
   });
+  const [statPoints] = useState<Record<string, DetectedPoints>>({
+    ...stepContext?.statisticalPoints,
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [angles, setAngles] = useState<Record<string, number>>({});
   const [currentFile, setCurrentFile] = useState<
     UploadFileWithBase64 & { index: number }
   >({
-    ...(stepContext?.fileList[0] as UploadFileWithBase64),
+    ...(stepContext?.isStatisticalMode
+      ? (stepContext?.statisticalFileList[0] as UploadFileWithBase64)
+      : (stepContext?.fileList[0] as UploadFileWithBase64)),
     index: 0,
   });
   const [prediction, setPrediction] = useState<
@@ -38,8 +44,13 @@ const Assessment: React.FC = () => {
   >();
 
   const isPrevDisabled = () => currentFile?.index === 0;
-  const isNextDisabled = () =>
-    currentFile?.index >= (stepContext?.fileList || []).length - 1;
+  const isNextDisabled = () => {
+    const list =
+      (stepContext?.isStatisticalMode
+        ? stepContext?.statisticalFileList
+        : stepContext?.fileList) || [];
+    return currentFile?.index >= list.length - 1;
+  };
 
   const changeFile = (n: number) => {
     if (stepContext?.fileList && currentFile) {
@@ -119,8 +130,42 @@ const Assessment: React.FC = () => {
             points={points[currentFile.uid]}
             key={currentFile?.index || -1}
             saveAngles={revertAnglesToShow}
+            statisticalPoints={statPoints[currentFile.uid]}
           />
           <div className={styles.description}>
+            <div>
+              <ToggleSwitch
+                id="mode-assessment"
+                checked={stepContext?.isStatisticalMode || false}
+                onChange={() => {}}
+              />
+              {stepContext?.isStatisticalMode ? (
+                <p>
+                  ⭐ Your posture assessment has been completed using all the
+                  photos you provided.
+                  <br />⭐ You can view both the calculated statistical posture
+                  and the initial posture lines side by side for comparison.
+                  <div className={styles.dotsContainer}>
+                    <div className={styles.dotWithText}>
+                      <div className={styles.dotStatColor}></div>
+                      Calculated statistical posture line
+                    </div>
+                    <div className={styles.dotWithText}>
+                      <div className={styles.dotInitColor}></div>
+                      Initial posture line
+                    </div>
+                  </div>
+                  ⭐ Please note that the displayed angles and classification
+                  results are exclusively derived from the calculated
+                  statistical posture.
+                </p>
+              ) : (
+                <p>
+                  ⭐ Your posture assessment has been completed using singal
+                  photo you provided.
+                </p>
+              )}
+            </div>
             <b>Calculated Angles</b>
             <p>
               Precise angles measured between key anatomical points to identify

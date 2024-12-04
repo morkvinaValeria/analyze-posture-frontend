@@ -1,8 +1,9 @@
 import { PlusOutlined } from '@ant-design/icons';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { Image, Upload } from 'antd';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StepContext } from '../../contexts/step';
+import ToggleSwitch from '../common/toggle-switch';
 
 import styles from './styles.module.scss';
 
@@ -19,7 +20,9 @@ const getBase64 = (file: FileType): Promise<string> =>
 const UploadImages: React.FC = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
+
   const stepContext = useContext(StepContext);
+  const [mode, setMode] = useState(stepContext?.isStatisticalMode || false);
   const savedFileList = stepContext?.fileList?.map((file) => ({
     ...file,
     status: 'done',
@@ -56,11 +59,11 @@ const UploadImages: React.FC = () => {
     }
 
     stepContext?.setFileList(listWithBase64);
+  };
 
-    console.log(listWithBase64.length);
-    if (listWithBase64.length >= 1) {
-      stepContext?.setIsNextValid(true);
-    }
+  const onModeChange = (checked: boolean) => {
+    setMode(checked);
+    stepContext?.setIsStatisticalMode(checked);
   };
 
   const uploadButton = (
@@ -70,14 +73,43 @@ const UploadImages: React.FC = () => {
     </button>
   );
 
+  useEffect(() => {
+    const listWithBase64 = stepContext?.fileList || [];
+    stepContext?.setIsNextValid(false);
+    if (
+      (listWithBase64.length >= 1 && !mode) ||
+      (listWithBase64.length >= 4 && mode)
+    ) {
+      stepContext?.setIsNextValid(true);
+    }
+  }, [stepContext?.fileList, mode, stepContext]);
+
   return (
     <div className={styles.uploadContainer}>
       <h5>Upload Your Photos</h5>
       <p>
         To receive an accurate assessment of your posture, please provide clear
-        and properly aligned photos. Follow the instructions below to ensure the
-        best results.
+        and properly aligned photos.
       </p>
+      <ul>
+        We offer two analysis modes:
+        <li>
+          <b> Single Mode:</b> Each photo is processed individually to identify
+          specific posture problems.
+        </li>
+        <li>
+          <b>Statistical Mode:</b> A more comprehensive and accurate method that
+          analyzes multiple photos to classify your overall posture type.
+        </li>
+      </ul>
+
+      <div>
+        <ToggleSwitch id="mode" checked={mode} onChange={onModeChange} />
+        <label>
+          Choose your preferred mode and follow the instructions below to ensure
+          optimal results.
+        </label>
+      </div>
       <br />
       <Upload
         multiple={true}
@@ -88,7 +120,9 @@ const UploadImages: React.FC = () => {
         onPreview={handlePreview}
         onChange={handleChange}
       >
-        {fileList.length >= 3 ? null : uploadButton}
+        {(fileList.length >= 3 && !mode) || (fileList.length >= 6 && mode)
+          ? null
+          : uploadButton}
       </Upload>
       {previewImage && (
         <Image
@@ -106,28 +140,62 @@ const UploadImages: React.FC = () => {
         depending on the quality and number of images submitted.
       </p>
       <br />
-      <h5>Photo Requirements</h5>
-      <p>
-        <b>Number of Photos:</b>
-        <br />
-        You can upload one or more photos (maximum is 3). The system requires at
-        least one image of your body in one of the following positions: front
-        view, side view or back view.
-      </p>
+      {!mode ? (
+        <>
+          <h5>Photo Requirements for Single Mode</h5>
+          <p>
+            <b>Number of Photos:</b>
+            <br />
+            📸 Upload 1 to 3 photos. The minimum requirement is one image of
+            your body in one of the following positions: front view, side view,
+            or back view.
+          </p>
+        </>
+      ) : (
+        <>
+          <h5>Photo Requirements for Statistical Mode</h5>
+          <p>
+            <b>Number of Photos:</b>
+            <br />
+            📸 Upload 4 to 6 photos, all taken from
+            <b> the same position</b>
+            (front view, back view, side left view or side right view)
+            <b> at different times of the day</b>. <br />
+            Take photos at key intervals, such as: after waking up, after
+            breakfast, after lunch, after a workday, after dinner, before going
+            to bed.
+            <br />
+            📸 Arrange the photos in chronological order, ensuring
+            <b> the final photo is labeled as "before going to bed"</b>. This
+            provides a detailed and comprehensive analysis of your posture
+            throughout the day.
+          </p>
+        </>
+      )}
       <p>
         <b>Pose Guidelines:</b>
         <br />
-        The person in the photo should be standing in a relaxed, natural posture
-        that closely resembles their everyday stance. Make sure not to correct
-        your posture while taking the photo to get an accurate analysis of your
-        typical body alignment.
+        📸The person in the photo should be standing in a relaxed, natural
+        posture that closely resembles their everyday stance. <br />
+        📸 Make sure not to correct your posture while taking the photo to get
+        an accurate analysis of your typical body alignment.
       </p>
       <p>
         <b>Clothing:</b>
         <br />
-        Wear form-fitting clothing to ensure the visibility of body structure
-        (avoid baggy or loose clothing). Ensure that the arms, legs, and torso
-        are visible for better assessment.
+        📸 Wear form-fitting clothing to ensure the visibility of body structure
+        (avoid baggy or loose clothing). <br />
+        📸 Ensure that the arms, legs, and torso are visible for better
+        assessment.
+      </p>
+      <p>
+        <b>Additional Tips:</b>
+        <br />
+        📸 Lighting: Ensure good lighting to eliminate shadows that may obscure
+        key features. <br />
+        📸 Background: Use a plain background to avoid distractions. <br />
+        📸 Camera Angle: Position the camera at shoulder height for consistent
+        and accurate framing.
       </p>
     </div>
   );
