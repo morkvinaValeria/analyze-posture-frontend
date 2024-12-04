@@ -1,6 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
-import { Image, Upload } from 'antd';
+import { Image, message, Upload } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { StepContext } from '../../contexts/step';
 import ToggleSwitch from '../common/toggle-switch';
@@ -61,6 +61,14 @@ const UploadImages: React.FC = () => {
     stepContext?.setFileList(listWithBase64);
   };
 
+  const handleValidation = (file: UploadFile) => {
+    const isEligible = file.type === 'image/png' || file.type === 'image/jpeg';
+    if (!isEligible) {
+      message.error(`${file.name} is not a PNG/JPEG file`);
+    }
+    return isEligible || Upload.LIST_IGNORE;
+  };
+
   const onModeChange = (checked: boolean) => {
     setMode(checked);
     stepContext?.setIsStatisticalMode(checked);
@@ -119,6 +127,7 @@ const UploadImages: React.FC = () => {
         fileList={fileList}
         onPreview={handlePreview}
         onChange={handleChange}
+        beforeUpload={handleValidation}
       >
         {(fileList.length >= 3 && !mode) || (fileList.length >= 6 && mode)
           ? null
